@@ -17,10 +17,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const expected = process.env.FITLIFE_SYNC_TOKEN;
-  if (!expected || getToken(req) !== expected) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
 
   if (!process.env.DATABASE_URL) {
     return res.status(500).json({ error: 'DATABASE_URL is not configured' });
