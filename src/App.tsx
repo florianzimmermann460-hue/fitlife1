@@ -98,6 +98,24 @@ function App(){
 }
 
 function Dashboard({setPage,supplementProgress,supplements,setSupplements}:{setPage:(p:Page)=>void;supplementProgress:number;supplements:Supplement[];setSupplements:(x:Supplement[])=>void}){
+   const [healthData, setHealthData] = useState<any>(null);
+
+  useEffect(() => {
+    fetch(`/api/health/today?date=${dateKey}`)
+      .then(r => r.json())
+      .then(x => setHealthData(x.data))
+      .catch(() => {});
+  }, []);
+
+  const steps = healthData?.steps != null
+    ? Number(healthData.steps).toLocaleString("de-DE")
+    : "—";
+
+  const stepNumber = healthData?.steps != null
+    ? Number(healthData.steps)
+    : 0;
+
+  const stepProgress = Math.min(Math.round(stepNumber / 10000 * 100), 100);
   const toggle=(id:string)=>setSupplements(supplements.map(s=>s.id===id?{...s,taken:!s.taken}:s));
   return <div>
     <div className="hero">
@@ -105,7 +123,12 @@ function Dashboard({setPage,supplementProgress,supplements,setSupplements}:{setP
       <button className="primary" onClick={()=>setPage("training")}><Play size={17}/> Training starten</button>
     </div>
     <div className="grid statsgrid">
-      <Metric icon={<Footprints/>} label="Schritte" value="8.742" sub="87 % vom Ziel"/>
+      <Metric
+  icon={<Footprints/>}
+  label="Schritte"
+  value={steps}
+  sub={`${stepProgress} % vom Ziel`}
+/>
       <Metric icon={<Activity/>} label="Aktive Kalorien" value="612 kcal" sub="+8 % vs. Ø"/>
       <Metric icon={<Moon/>} label="Schlaf" value="7 h 48 min" sub="Gute Erholung"/>
       <Metric icon={<HeartPulse/>} label="Ø Puls" value="64 bpm" sub="Ruhe: 57 bpm"/>
@@ -114,7 +137,13 @@ function Dashboard({setPage,supplementProgress,supplements,setSupplements}:{setP
       <section className="card"><CardHead title="Tagesziele" action="Details" onClick={()=>setPage("nutrition")}/>
         <div className="goal"><div><b>Kalorien</b><span>1.842 / 2.300 kcal</span></div><Progress value={80}/></div>
         <div className="goal"><div><b>Protein</b><span>128 / 160 g</span></div><Progress value={80}/></div>
-        <div className="goal"><div><b>Schritte</b><span>8.742 / 10.000</span></div><Progress value={87}/></div>
+       <div className="goal">
+  <div>
+    <b>Schritte</b>
+    <span>{steps} / 10.000</span>
+  </div>
+  <Progress value={stepProgress}/>
+</div>
       </section>
       <section className="card"><CardHead title="Supplements" action="Alle" onClick={()=>setPage("supplements")}/>
         <div className="supp-summary"><div className="ring" style={{"--p":`${supplementProgress*3.6}deg`} as React.CSSProperties}><b>{supplementProgress}%</b></div><div><b>Heute erledigt</b><p>{supplements.filter(s=>s.taken).length} von {supplements.length} Einnahmen</p></div></div>
