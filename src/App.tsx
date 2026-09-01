@@ -119,7 +119,18 @@ function Dashboard({setPage,supplementProgress,supplements,setSupplements}:{setP
   const toggle=(id:string)=>setSupplements(supplements.map(s=>s.id===id?{...s,taken:!s.taken}:s));
   return <div>
     <div className="hero">
-      <div><div className="eyebrow">DONNERSTAG · 27. AUGUST 2026</div><h1>Guten Abend 👋</h1><p>Hier ist dein Überblick für heute.</p></div>
+     <div>
+  <div className="eyebrow">
+    {new Date().toLocaleDateString("de-DE", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+      year: "numeric"
+    }).toUpperCase()}
+  </div>
+  <h1>Guten Abend 👋</h1>
+  <p>Hier ist dein Überblick für heute.</p>
+</div>
       <button className="primary" onClick={()=>setPage("training")}><Play size={17}/> Training starten</button>
     </div>
     <div className="grid statsgrid">
